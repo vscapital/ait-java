@@ -1,0 +1,29 @@
+#spring.application.name=shop_g49
+#spring.datasource.url=jdbc:postgresql://localhost:5432/shop_g49
+#spring.datasource.username=postgres
+#spring.datasource.password=postgres
+#spring.jpa.hibernate.ddl-auto=update
+#spring.jpa.show-sql=true
+#spring.jpa.properties.hibernate.format_sql=true
+#spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+spring:
+  application:
+    name: shop_g49
+  datasource:
+    url: jdbc:postgresql://localhost:5432/shop_g49
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    change-log: classpath:db/changelog/changelog-master.xml
+
+server:
+  servlet:
+    context-path: /api
