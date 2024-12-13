@@ -1,66 +1,77 @@
 package ait.co49.shop.service;
 
+import ait.co49.shop.model.dto.ProductDto;
 import ait.co49.shop.model.entity.Product;
 import ait.co49.shop.repository.ProductRepository;
+import ait.co49.shop.service.mapping.ProductMappingService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
+    private final ProductMappingService productMapper;
 
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, ProductMappingService productMapper) {
         this.productRepository = productRepository;
+        this.productMapper = productMapper;
     }
 
     @Override
     @Transactional
-    public Product addProduct(Product product) {
-        return productRepository.save(product);
+    public ProductDto addProduct(ProductDto productDto) {
+        Product product = productMapper.mapDtoToEntity(productDto);
+        Product savedProduct = productRepository.save(product);
+        return productMapper.mapEntityToDto(savedProduct);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Product> getProducts() {
-        return productRepository.findAll();
+    public List<ProductDto> getProducts() {
+        return productRepository.findAll().stream()
+                .map(productMapper::mapEntityToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Product getProductById(Long id) {
-        return productRepository.findById(id)
+    public ProductDto getProductById(Long id) {
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
+        return productMapper.mapEntityToDto(product);
     }
 
     @Override
     @Transactional
-    public Product updateProduct(Long id, Product product) {
-        Product existingProduct = getProductById(id);
-        existingProduct.setTitle(product.getTitle());
-        existingProduct.setPrice(product.getPrice());
-        existingProduct.setActive(product.isActive());
-        return productRepository.save(existingProduct);
+    public ProductDto updateProduct(Long id, ProductDto productDto) {
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
+        productMapper.updateEntity(existingProduct, productDto);
+        Product updatedProduct = productRepository.save(existingProduct);
+        return productMapper.mapEntityToDto(updatedProduct);
     }
 
     @Override
     @Transactional
-    public Product deleteProduct(Long id) {
-        Product product = getProductById(id);
+    public ProductDto deleteProduct(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
         productRepository.deleteById(id);
-        return product;
+        return productMapper.mapEntityToDto(product);
     }
 
     @Override
     @Transactional
-    public Product deleteProductByTitle(String title) {
+    public ProductDto deleteProductByTitle(String title) {
         Product product = productRepository.findByTitle(title)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with title: " + title));
         productRepository.delete(product);
-        return product;
+        return productMapper.mapEntityToDto(product);
     }
 
     @Override

@@ -1,9 +1,8 @@
 package ait.co49.shop.controller;
 
-import ait.co49.shop.model.entity.Product;
+import ait.co49.shop.model.dto.ProductDto;
 import ait.co49.shop.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -19,37 +18,39 @@ public class ProductController {
     }
 
     @PostMapping
-    public Product addProduct(@RequestBody Product product) {
-        return this.productService.addProduct(product);
+    public ResponseEntity<ProductDto> addProduct(@RequestBody ProductDto product) {
+        return ResponseEntity.ok(productService.addProduct(product));
     }
 
     @GetMapping
-    public List<Product> getProducts() {
-        return this.productService.getProducts();
+    public ResponseEntity<List<ProductDto>> getProducts() {
+        return ResponseEntity.ok(productService.getProducts());
     }
 
-    @GetMapping(value = "/{id}")
-    public Product getProductById(@PathVariable Long id) {
-        return this.productService.getProductById(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getProductById(id));
     }
 
-    @PutMapping(value = "/{id}")
-    public Product updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        return this.productService.updateProduct(id, product);
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductDto> updateProduct(
+            @PathVariable Long id,
+            @RequestBody ProductDto product) {
+        return ResponseEntity.ok(productService.updateProduct(id, product));
     }
 
-    @DeleteMapping(value = "/{id}")
-    public Product deleteProduct(@PathVariable Long id) {
-        return this.productService.deleteProduct(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ProductDto> deleteProduct(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.deleteProduct(id));
     }
 
-    @DeleteMapping(value = "/delete-by-title")
-    public Product deleteProductByTitle(@RequestParam String title) {
-        return this.productService.deleteProductByTitle(title);
+    @DeleteMapping("/by-title")
+    public ResponseEntity<ProductDto> deleteProductByTitle(@RequestParam String title) {
+        return ResponseEntity.ok(productService.deleteProductByTitle(title));
     }
 
-    @GetMapping(value = "/total-price")
-    public BigDecimal getTotalPrice() {
-        return this.productService.getTotalPrice();
+    @GetMapping("/total-price")
+    public ResponseEntity<BigDecimal> getTotalPrice() {
+        return ResponseEntity.ok(productService.getTotalPrice());
     }
 }
